@@ -47,10 +47,11 @@ Powered By Marp
 
 [Google Colaboratory 実行環境](https://colab.research.google.com/github/taichi0315/optimization-handson/blob/master/sample/model.ipynb)
 
+「ドライブにコピー」ボタンを押すだけ！
+
 ---
 
 ## Google Colaboratory とは
-
 
 - Googleが無料で提供する、対話型のPython環境
 - Google Drive上で動作・管理する
@@ -60,7 +61,6 @@ Powered By Marp
 ---
 
 ## Pulp とは
-
 - Pythonの最適化ライブラリ
 - 最適化ライブラリは何種類かのソルバーを扱う
 - デフォルトで無料のソルバーを使うことができる
