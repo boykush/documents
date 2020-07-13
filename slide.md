@@ -4,6 +4,8 @@ marp: true
 
 # 数理最適化ハンズオン
 
+Powered By Marp
+
 ---
 
 ## 数理最適化とは
@@ -112,9 +114,9 @@ for emp in Employee:
 ```
 x[emp, day] = LpVariable(name=f"x_{emp}_{day}", cat="Binary") 
 ```
-#### name
+### name
 変数の名前
-#### cat
+### cat
 変数のカテゴリ
 
 ---
@@ -137,6 +139,23 @@ Binary, Integerは計算が重いので、なるべくContinuous
 model = LpProblem(sense=LpMinimize)
 ```
 
+### sense
+`LpMinimize`または`LpMaximize`を与えて、最小化を行うか最大化を行うかを指定する。
+
+---
+
+## 求解
+```python
+status = model.solve()
+print(LpStatus[status])
+```
+---
+
+## 求解結果の表示
+```python
+for emp, day in x:
+    print(emp, day, x[emp, day].value())
+```
 
 ---
 
