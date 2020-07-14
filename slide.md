@@ -45,7 +45,7 @@ Powered By Marp
 
 ## ハンズオン準備
 
-[Google Colaboratory 実行環境](https://colab.research.google.com/github/taichi0315/optimization-handson/blob/master/sample/model.ipynb)
+[Google Colaboratory 実行環境](https://colab.research.google.com/github/taichi0315/optimization-handson/blob/master/handson/model.ipynb)
 
 「ドライブにコピー」ボタンを押すだけ！
 
@@ -78,6 +78,7 @@ Powered By Marp
 ## Pulpのインポート
 
 ```python
+# Import
 from pulp import *
 ```
 
@@ -104,7 +105,7 @@ Day      = { 1, 2, 3 }
 x = {}
 for emp in Employee:
     for day in Day:
-        x[emp, day] = LpVariable(f"x[{emp}, {day}]", cat="Binary") 
+        x[emp, day] = LpVariable(name=f"x[{emp}, {day}]", cat="Binary") 
 ```
 
 ---
@@ -112,7 +113,7 @@ for emp in Employee:
 数理モデルの変数を表すクラス
 
 ```python
-x[emp, day] = LpVariable(name=f"x_{emp}_{day}", cat="Binary") 
+LpVariable(name=[変数名], cat=[変数のカテゴリ]) 
 ```
 ### name
 変数の名前
@@ -132,11 +133,19 @@ Binary, Integerは計算が重いので、なるべくContinuous
 
 ---
 
+## モデルの追加
+```python
+# Create Model
+model = LpProblem(sense=LpMinimize)
+```
+
+---
+
 ## LpProblem
 1つのモデルを管理するクラス
 
 ```python
-model = LpProblem(sense=LpMinimize)
+LpProblem(sense=[LpMinimizeまたはLpMaximize])
 ```
 
 ### sense
@@ -146,6 +155,7 @@ model = LpProblem(sense=LpMinimize)
 
 ## 求解
 ```python
+# Solve
 status = model.solve()
 print(LpStatus[status])
 ```
@@ -156,9 +166,44 @@ print(LpStatus[status])
 
 ## 求解結果の表示
 ```python
+# Display Result
 for emp, day in x:
     print(emp, day, x[emp, day].value())
 ```
+
+---
+
+## 制約
+求解する上で必ず守る制約条件
+- 職員の最低配置人数
+
+```python
+# Constraint
+for day in Day:
+    model.addConstraint(
+        lpSum(x[emp, day] for emp in Employee)
+        >=
+        2
+    )
+```
+
+---
+
+## LpProbrem.addConstraint
+
+```
+model.addConstraint([制約式])
+```
+モデルに制約式の追加を行う
+
+---
+
+## lpSum
+
+```
+lpSUm()
+```
+
 
 ---
 
