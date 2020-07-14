@@ -111,7 +111,7 @@ for emp in Employee:
 ## LpVariable
 数理モデルの変数を表すクラス
 
-```
+```python
 x[emp, day] = LpVariable(name=f"x_{emp}_{day}", cat="Binary") 
 ```
 ### name
@@ -149,6 +149,9 @@ model = LpProblem(sense=LpMinimize)
 status = model.solve()
 print(LpStatus[status])
 ```
+- `model.solve()`でstatus codeを返す
+- `LpStatus`マップでstatusの名前を取得
+
 ---
 
 ## 求解結果の表示
