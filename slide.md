@@ -1,6 +1,7 @@
 ---
 marp: true
 ---
+<!-- page_number: true -->
 
 # 数理最適化ハンズオン
 
