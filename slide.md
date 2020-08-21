@@ -157,7 +157,10 @@ def get(userId: User.Id): Future[Option[Userpassword]] = ???
 - Play FrameWorkを使用
 - 簡易的なユーザー認証処理ができる状態
 - あえて標準ライブラリのみで実装
-- ブランチを切り替えると色々な実装パターンが（処理内容は同じ）
-- イシューに改善点を列挙してある（コメント・イシュー追加歓迎します！）
+- ブランチを切り替えると色々な実装パターンが
+  - Option <-> Either <-> EitherT
+  - for yield <-> map, flatMap
+- イシューに改善点を列挙してある
+  - コメント・イシュー追加歓迎します！
 
 # 楽しいScalaライフを！
