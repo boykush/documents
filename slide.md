@@ -51,7 +51,7 @@ headingDivider: 1
 
 # 対象別の発表の目的
 ## 全くのScala初学者
-- 「こういう便利な機能があるんだな〜」
+- こういう便利な機能があるんだな〜
 
 ## Scalaの文法を学んだが開発の経験がない方（一番参考になる？）
 - Scalaの機能が実際にどう開発に用いられているかを知る
@@ -77,19 +77,34 @@ headingDivider: 1
 5. `userPassword.password`と入力で受け取った`password`を比較し、`password`が正しいかのエラーハンドリング
 6. 全て正常であれば認証処理を行う
 
+# Optionで実装してみる
+
+# Optionの概要（例）
+![](option.png)
+
 # DBから値を取得するメソッド
 ```scala
-// Userクラスインスタンスを取得
+// User型の値を取得
 def getByName(name: String): Future[Option[User]] = ???
 
-// UserPasswordクラスインスタンスを取得
+// UserPassword型の値を取得
 def get(userId: User.Id): Future[Option[Userpassword]] = ???
 ```
 
-# Optionで実装してみる
+# DBから値を取得する処理の例
+```scala
+// コントーラー内処理
+for {
+  userOpt: Option[User] <- userDao.getByName(name)
+  _                     <- Future.successful(println(userOpt))
+} yield ...
 
-# Optionの概要
-画像を貼り付け
+// User型の値が見つかった場合
+// Some(User(id = Some(1), name = "yaga"))
+
+// User型の値が見つからなかった場合
+// None
+```
 
 # コントローラー処理（Option ver）
 ```scala
@@ -100,67 +115,126 @@ def get(userId: User.Id): Future[Option[Userpassword]] = ???
       case None       => Future.successful(NotFound("not found name"))
       case Some(user) =>
         for {
-          Some(userPassword): Option[UserPassword] <- userPasswordDao.get(user.withId)
-          result:             Result               <- userPassword.verify(login.password) match {
+          Some(userPassword) <- userPasswordDao.get(user.withId)
+          result: Result     <- userPassword.verify(login.password) match {
             case false => Future.successful(Unauthorized("invalid password"))
             case true  => authMethods.loginSuccess(user, Redirect(homeUrl))
           }
         } yield result
     }
   } yield result
-})
+}
 ```
 
 # Optionで書いた場合
 - ネストが深くて読みづらい
-- ネストが深すぎるとエラーハンドリング処理が書きにくいことも
+- これ以上処理が増えるとエラーハンドリング処理が書きにくい
 - `None`はあくまで**値がない**という情報しか持たない
 
 # Eitherで実装してみる
 
-# Eitherの概要
-画像を貼り付け
+# Eitherの概要（例）
+![](either.png)
+
+# Option型からEither型への変換
+scalaリポジトリ内の`Option.scala`より
+```scala
+@inline final def toRight[X](left: => X): Either[X, A] =
+  if (isEmpty) Left(left) else Right(this.get)
+```
+
+# DBから値を取得する処理の例
+```scala
+// コントーラー内処理
+for {
+  userOpt:    Option[User]         <- userDao.getByName(name)
+  userEither: Either[Result, User]  = userOpt.toRight(NotFound("not found name"))
+  _                                <- Future.successful(println(userEither))
+} yield ...
+
+// User型の値が見つかった場合
+// Some(User(id = Some(1), name = "yaga"))
+
+// User型の値が見つからなかった場合
+// None
+```
 
 # コントローラー処理（Either ver）
 ```scala
-土日で作業
+(login: LoginFormData) => {
+  for {
+    userOpt:    Option[User]         <- userDao.getByName(login.name)
+    userEither: Either[Result, User]  = userOpt.toRight(NotFound("not found name"))
+    userPasswordEither: Either[Result, UserPassword] <-
+      userEither match {
+        case Left(l)     => Future.successful(Left(l))
+        case Right(user) => userPasswordDao.get(user.withId).map(_.toRight(NotFound))
+      }
+    result: Result <- userPasswordEither match {
+      case Left(l)             => Future.successful(l)
+      case Right(userPassword) =>
+        userPassword.verify(login.password) match {
+          case false => Future.successful(Unauthorized("invalid password"))
+          case true  => authMethods.loginSuccess(userOpt.get, Redirect(homeUrl))
+        }
+    }
+  } yield result
+}
 ```
 
 # Eitherで書いた場合
-- ネストが浅くなり読みやすくなった
+- ネストが浅くなった
 - `Left`により`どんなエラーが起きたか`という情報を持つ
 
 # EitherTで書いた場合（番外編）
 ```scala
-土日で作業
+(login: LoginFormData) => {
+  val result: EitherT[Future, Result, Result] =
+    for {
+      user         <- EitherT(userDao.getByName(login.name).map(_.toRight(NotFound("not found name"))))
+      userPassword <- EitherT(userPasswordDao.get(user.withId).map(_.toRight(NotFound)))
+      result       <- EitherT(
+        userPassword.verify(login.password) match {
+          case false => Future.successful(Left(Unauthorized("invalid password")))
+          case true  => authMethods.loginSuccess(user, Redirect(homeUrl)).map(Right(_))
+        }
+      )
+    } yield result
+
+  result.value.map {
+    case Left(l)  => l
+    case Right(r) => r
+  }
+}
 ```
 
 # まとめ
 
 # Scalaを学ぶにあたってやったこと
-- I: ドワンゴ研修資料
-- I: Tour of Scala
-- O: Todoアプリ作成
-- I: N予備校基礎・応用
-- I: 実践Scala入門
-- I: 入社した会社の研修資料（標準ライブラリのメソッドを学ぶ）
-- I: Scalaの標準ライブラリを読む
-- O: Todoアプリ作成（２回目）
+- ドワンゴ研修資料
+- Tour of Scala
+- [Output] Todoアプリ作成
+- N予備校基礎・応用
+- 実践Scala入門
+- 入社した会社の研修資料（標準ライブラリのメソッドを学ぶ）
+- Scalaの標準ライブラリを読む
+- [Output] Todoアプリ作成（２回目）
 
 # アウトプットするときにサンプルコードが欲しい
 
 # 初学者向けのベースプロジェクトを作りました
 
-### [taichi0315/scala-play-auth-sample](https://github.com/taichi0315/scala-play-auth-sample)
+### [https://github.com/taichi0315/scala-play-auth-sample](https://github.com/taichi0315/scala-play-auth-sample)
 
 # ベースプロジェクト概要
 - Play FrameWorkを使用
 - 簡易的なユーザー認証処理ができる状態
-- あえて標準ライブラリのみで実装
+- defaultブランチはあえて標準ライブラリのみで実装
 - ブランチを切り替えると色々な実装パターンが
   - Option <-> Either <-> EitherT
-  - for yield <-> map, flatMap
+  - for yield <-> flatMap, map
 - イシューに改善点を列挙してある
   - コメント・イシュー追加歓迎します！
+- 自分のコードが正解ではないので参考程度に
 
 # 楽しいScalaライフを！
