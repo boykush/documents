@@ -9,11 +9,11 @@ headingDivider: 1
 
 # 自己紹介
 ## 名前
-- 久代太一（久代太一）
+- 久代太一（クシロタイチ）
 
 ## 会社
 - 株式会社ネクストビートの20新卒エンジニア
-- キズナコネクトという保育園の業務支援Saas
+- キズナコネクトという保育園の業務支援SaaS
 - 労務管理機能があるので、労基法周りのドメインロジック多め
 
 # 自己紹介
@@ -23,7 +23,7 @@ headingDivider: 1
   - 個人でGo, React
 - 社会人
   - 業務はScala(Play Framework), TypeScript(Angular, RxJS)
-  - 個人でHaskell, オブジェクト指向, DDD, 圏論, アジャイル, Rust, インタプリンタ...
+  - 個人でHaskell, オブジェクト指向, DDD, 圏論, アジャイル, Vim, Go, Rust, インタプリンタ...
 
 # 自己紹介
 ## Scala歴
@@ -49,12 +49,17 @@ headingDivider: 1
 # 今日のテーマ
 ### ログイン処理のエラーハンドリングにおけるOptionとEitherの使用法を検討する
 
+# 今日のテーマ
+- Scalaの機能を学んだ！は良いけどどう活かせばいい？
+- Option, Either（Future, Try）の扱いに慣れたい
+- 馴染みのあるログイン処理でOptionとEitherについて議論しよう！
+
 # 対象別の発表の目的
 ## 全くのScala初学者
 - こういう便利な機能があるんだな〜
 
 ## Scalaの文法を学んだが開発の経験がない方（一番参考になる？）
-- Scalaの機能が実際にどう開発に用いられているかを知る
+- Scalaの機能が実際にどう開発に用いられているかの例を知る
 
 ## 開発経験が豊富な方
 - 自分が初学者に説明するのであればこうやる等の改善点があれば
@@ -153,10 +158,10 @@ for {
 } yield ...
 
 // User型の値が見つかった場合
-// Some(User(id = Some(1), name = "yaga"))
+// Right(User(id = Some(1), name = "yaga"))
 
 // User型の値が見つからなかった場合
-// None
+// Left(NotFound("not found name"))
 ```
 
 # コントローラー処理（Either ver）
@@ -184,7 +189,8 @@ for {
 
 # Eitherで書いた場合
 - ネストが浅くなった
-- `Left`により`どんなエラーが起きたか`という情報を持つ
+- これ以上処理が増えてもエラーハンドリング処理を書きやすい
+- `Left`により**どんなエラーが起きたか**という情報を持つ
 
 # EitherTで書いた場合（番外編）
 ```scala
@@ -196,7 +202,8 @@ for {
       result       <- EitherT(
         userPassword.verify(login.password) match {
           case false => Future.successful(Left(Unauthorized("invalid password")))
-          case true  => authMethods.loginSuccess(user, Redirect(homeUrl)).map(Right(_))
+          case true  => authMethods.loginSuccess(user, Redirect(homeUrl)).map(Right(_)):w
+
         }
       )
     } yield result
