@@ -1,8 +1,9 @@
 ---
-marp: true
+marp: false
 ---
 <!--
 headingDivider: 1
+page_number: true
 -->
 
 # OptionとEitherによるログイン処理のエラーハンドリングを検討
@@ -47,13 +48,17 @@ headingDivider: 1
 -->
 
 # 今日のテーマ
-### ログイン処理のエラーハンドリングにおけるOptionとEitherの使用法を検討する
+### OptionとEitherによるログイン処理のエラーハンドリングを検討
 
 # 今日のテーマ
-- Scalaの機能を学んだ！は良いけどどう活かせばいい？
-- Option, Either（Future, Try）の扱いに慣れたい
-- 馴染みのあるログイン処理でOptionとEitherについて議論しよう！
+- プロダクト開発でのOption, Eitherの使用例を、ログイン処理を題材に紹介
+- 「Scalaの文法・標準ライブラリを学んだ！けどどう活かせばいい？」という方向け
+- Scalaのことを一切知らない方
+  - 「こんなことができるんだな〜」くらいの参考程度に
+- 経験豊富な方
+  - 自分が初学者に説明するならこうする等の改善点があれば
 
+<!--
 # 対象別の発表の目的
 ## 全くのScala初学者の方
 - こういう便利な機能があるんだな〜
@@ -63,24 +68,25 @@ headingDivider: 1
 
 ## 開発経験が豊富な方
 - 自分が初学者に説明するのであればこうする等の改善点があれば
+-->
 
 # ログイン処理のエラーハンドリング
 
 # テーブル定義
 - user
-  - id
+  - user_id
   - name
-- user_password
-  - user_id (idと対応)
+- user_password(userテーブルと一対一)
+  - user_id
   - password
 
 # 処理の流れを整理
 1. ユーザーから`name`と`password`の入力を受け取る
-2. 入力で受け取った`name`によってDBから`user`インスタンスを取得
-3. `user`が取得できたかどうかのエラーハンドリング
-4. `user.id`によって`userPassword`インスタンスを取得
-5. `userPassword.password`と入力で受け取った`password`を比較し、`password`が正しいかのエラーハンドリング
-6. 全て正常であれば認証処理を行う
+2. 受け取った`name`を用いて、`user`テーブルからデータを取得する処理を行う
+3. `user`を取得できたかどうかのエラーハンドリングを行う
+4. 取得した`user`の`id`によって`user_password`テーブルからデータを取得する処理を行う
+5. 取得した`userPassword`の`password`と入力で受け取った`password`を比較し、エラーハンドリングを行う。
+6. パスワードが正しければ、認証処理を行う。
 
 # Optionで実装してみる
 
@@ -141,12 +147,17 @@ for {
 # Eitherの概要（例）
 ![](either.png)
 
+# Optionの概要（例）
+![](option.png)
+
+<!--
 # Option型からEither型への変換
 scalaリポジトリ内の`Option.scala`より
 ```scala
 @inline final def toRight[X](left: => X): Either[X, A] =
   if (isEmpty) Left(left) else Right(this.get)
 ```
+-->
 
 # DBから値を取得する処理の例
 ```scala
@@ -217,7 +228,7 @@ for {
 
 # まとめ
 
-# Scalaを学ぶにあたってやったこと
+# Scalaを学ぶにあたってやったこと（上から順）
 - ドワンゴ研修資料
 - Tour of Scala
 - [Output] Todoアプリ作成
@@ -234,7 +245,8 @@ for {
 ### [https://github.com/taichi0315/scala-play-auth-sample](https://github.com/taichi0315/scala-play-auth-sample)
 
 # ベースプロジェクト概要
-- Play FrameWorkを使用
+- 今日の発表資料のサンプルコードを含む
+- Play Frameworkを使用
 - 簡易的なユーザー認証処理ができる状態
 - defaultブランチはあえて標準ライブラリのみで実装
 - ブランチを切り替えると色々な実装パターンが
