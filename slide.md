@@ -1,5 +1,5 @@
 ---
-marp: false
+marp: true
 ---
 <!--
 headingDivider: 1
@@ -24,7 +24,7 @@ page_number: true
   - 個人でGo, React
 - 社会人
   - 業務はScala(Play Framework), TypeScript(Angular, RxJS)
-  - 個人でHaskell, オブジェクト指向, DDD, 圏論, アジャイル, Vim, Go, Rust, インタプリンタ...
+  - 個人でHaskell, オブジェクト指向, DDD, 圏論, アジャイル, Vim, Go, Rust, インタプリンタ
 
 # 自己紹介
 ## Scala歴
@@ -32,66 +32,63 @@ page_number: true
 - プロダクト開発寄り
 - とにかくScalaが好き
 
-<!--
-# 今日のテーマ
-## Scala初学者がつまずきがちなところは？
-- Option, Either, Future, Try
-  - 値の操作方法を覚える
-- for yield式
-  - map, flatMapとの対応
-- match式
-  - switch式との違いは？
-- apply, unapply
-  - DBやフォームとのマッピング?
-- case class, object, trait, companion object
-  - どのように使い分ける?
--->
-
 # 今日のテーマ
 ### OptionとEitherによるログイン処理のエラーハンドリングを検討
 
 # 今日のテーマ
 - プロダクト開発でのOption, Eitherの使用例を、ログイン処理を題材に紹介
 - 「Scalaの文法・標準ライブラリを学んだ！けどどう活かせばいい？」という方向け
-- Scalaのことを一切知らない方
+- Scalaの文法・機能を一切知らない方
   - 「こんなことができるんだな〜」くらいの参考程度に
 - 経験豊富な方
   - 自分が初学者に説明するならこうする等の改善点があれば
 
-<!--
-# 対象別の発表の目的
-## 全くのScala初学者の方
-- こういう便利な機能があるんだな〜
-
-## Scalaの文法を学んだが開発の経験がない方（一番参考になる？）
-- Scalaの機能が実際にどう開発に用いられているかの例を知る
-
-## 開発経験が豊富な方
-- 自分が初学者に説明するのであればこうする等の改善点があれば
--->
-
 # ログイン処理のエラーハンドリング
 
-# テーブル定義
-- user
-  - user_id
-  - name
-- user_password(userテーブルと一対一)
-  - user_id
-  - password
+# エンティティ定義
+```scala
+// User.Idは別途定義されているものとする
+case class User(
+  id:   Option[User.Id], 
+  name: String  
+)
+// Userと一対一の関係を持つ
+case class UserPassword(
+  userId:   User.Id,
+  password: String
+)
+```
+
+<!--
+- これらの定義は簡略化している
+- Userクラスはidとname
+- UserPasswordクラスはidとpassword
+- DBのテーブル定義も同じ構成
+-->
 
 # 処理の流れを整理
 1. ユーザーから`name`と`password`の入力を受け取る
-2. 受け取った`name`を用いて、`user`テーブルからデータを取得する処理を行う
+2. 受け取った`name`を用いて、`User`クラスインスタンス（以下、`user`）を取得する処理を行う
 3. `user`を取得できたかどうかのエラーハンドリングを行う
-4. 取得した`user`の`id`によって`user_password`テーブルからデータを取得する処理を行う
-5. 取得した`userPassword`の`password`と入力で受け取った`password`を比較し、エラーハンドリングを行う。
-6. パスワードが正しければ、認証処理を行う。
+4. 取得した`user`の`id`によって`UserPassword`クラスインスタンス（以下、`userPassword`）を取得する処理を行う
+5. 取得した`userPassword`の`password`と入力で受け取った`password`を比較し、エラーハンドリングを行う
+6. パスワードが正しければ、認証処理を行う
 
 # Optionで実装してみる
 
 # Optionの概要（例）
+## 値があるかないかを表す型
 ![](option.png)
+
+<!--
+
+- 値があるかないかを表す型
+- OptionにUser型を渡したユーザーオプション型
+- 値がないことを表すNoneオブジェクト
+- 値があることを表すSomeクラスインスタンス
+- SomeクラスインスタンスはUser型の値を持ち、値を取り出す処理が用意されている
+
+-->
 
 # DBから値を取得するメソッド
 ```scala
@@ -99,14 +96,22 @@ page_number: true
 def getByName(name: String): Future[Option[User]] = ???
 
 // UserPassword型の値を取得
-def get(userId: User.Id): Future[Option[Userpassword]] = ???
+def get(userId: User.Id): Future[Option[UserPassword]] = ???
 ```
+<!--
+- 今回サンプルコードで使用するDBから値を取得するメソッド
+- userテーブルに対応するUser型の値を取得するgetByNameメソッド
+- user_passwordテーブルに対応するUserPassword型の値を取得する
+- Futureには触れない
+
+-->
 
 # DBから値を取得する処理の例
 ```scala
 // コントーラー内処理
 for {
   userOpt: Option[User] <- userDao.getByName(name)
+  // userOptを出力
   _                     <- Future.successful(println(userOpt))
 } yield ...
 
@@ -142,21 +147,24 @@ for {
 - これ以上処理が増えるとエラーハンドリング処理が書きにくい
 - `None`はあくまで**値がない**という情報しか持たない
 
-# Eitherで実装してみる
+<!--
+- DBから取得したらチェック。その値を使って次の値を取得...でネストが深くなる
+- エラーハンドリング処理が書きにくい
+-->
 
-# Eitherの概要（例）
-![](either.png)
+# Eitherで実装してみる
 
 # Optionの概要（例）
 ![](option.png)
 
+# Eitherの概要（例）
+![](either.png)
+
 <!--
-# Option型からEither型への変換
-scalaリポジトリ内の`Option.scala`より
-```scala
-@inline final def toRight[X](left: => X): Either[X, A] =
-  if (isEmpty) Left(left) else Right(this.get)
-```
+- Optionに比べて、正常でないどんな値を持たせるか
+- Either型に与える一つ目の引数が正常でない場合の値の型
+- 二つ目の引数が正常な場合に返す値の方
+- Option型に比べて正常でない時の情報が増える
 -->
 
 # DBから値を取得する処理の例
@@ -174,6 +182,11 @@ for {
 // User型の値が見つからなかった場合
 // Left(NotFound("not found name"))
 ```
+
+<!--
+- Option型の値が持つ、topRightメソッドに正常でないの値を与えることでEitherに変換できる
+- Someの場合はそのままRightに、Noneの場合は引数に与えた値をLeftに変換する
+-->
 
 # コントローラー処理（Either ver）
 ```scala
