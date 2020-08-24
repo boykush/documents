@@ -14,7 +14,7 @@ page_number: true
 
 ## 会社
 - 株式会社ネクストビートの20新卒エンジニア
-- キズナコネクトという保育園の業務支援SaaS
+- 「KIDSNA キズナコネクト」という保育園の業務支援SaaSの開発に従事
 - 労務管理機能があるので、労基法周りのドメインロジック多め
 
 # 自己紹介
@@ -77,7 +77,6 @@ case class UserPassword(
 # Optionで実装してみる
 
 # Optionの概要（例）
-## 値があるかないかを表す型
 ![](option.png)
 
 <!--
@@ -96,7 +95,7 @@ case class UserPassword(
 def getByName(name: String): Future[Option[User]] = ???
 
 // UserPassword型の値を取得
-def get(userId: User.Id): Future[Option[UserPassword]] = ???
+def get(userId: User.Id):    Future[Option[UserPassword]] = ???
 ```
 <!--
 - 今回サンプルコードで使用するDBから値を取得するメソッド
@@ -111,9 +110,7 @@ def get(userId: User.Id): Future[Option[UserPassword]] = ???
 // コントーラー内処理
 for {
   userOpt: Option[User] <- userDao.getByName(name)
-  // userOptを出力
-  _                     <- Future.successful(println(userOpt))
-} yield ...
+} yield println(userOpt) // userOptを出力
 
 // User型の値が見つかった場合
 // Some(User(id = Some(1), name = "yaga"))
@@ -127,12 +124,12 @@ for {
 (login: LoginFormData) => {
   for {
     userOpt: Option[User] <- userDao.getByName(login.name)
-    result:  Result       <- userOpt match {
+    result                <- userOpt match {
       case None       => Future.successful(NotFound("not found name"))
       case Some(user) =>
         for {
           Some(userPassword) <- userPasswordDao.get(user.withId)
-          result: Result     <- userPassword.verify(login.password) match {
+          result             <- userPassword.verify(login.password) match {
             case false => Future.successful(Unauthorized("invalid password"))
             case true  => authMethods.loginSuccess(user, Redirect(homeUrl))
           }
@@ -173,8 +170,7 @@ for {
 for {
   userOpt:    Option[User]         <- userDao.getByName(name)
   userEither: Either[Result, User]  = userOpt.toRight(NotFound("not found name"))
-  _                                <- Future.successful(println(userEither))
-} yield ...
+} yield println(userEither) // userEitherを出力
 
 // User型の値が見つかった場合
 // Right(User(id = Some(1), name = "yaga"))
@@ -199,7 +195,7 @@ for {
         case Left(l)     => Future.successful(Left(l))
         case Right(user) => userPasswordDao.get(user.withId).map(_.toRight(NotFound))
       }
-    result: Result <- userPasswordEither match {
+    result <- userPasswordEither match {
       case Left(l)             => Future.successful(l)
       case Right(userPassword) =>
         userPassword.verify(login.password) match {
@@ -214,9 +210,7 @@ for {
 <!--
 
 - userEitherが正常でない場合はそのままLeftを引き継ぐ
-- Rightである場合は、パスワード情報を取得
-- userPasswordが正常でないそのままLeftの値を引き継ぐ
-- 正常の場合は次の処理
+- 毎回エラーハンドリングした結果のEither型の値を精製して、次の処理にEither型の値を用いる
 
 -->
 
@@ -230,7 +224,7 @@ for {
 - Eitherを使って次の処理へ、ネストせずにエラー情報を保持する
 -->
 
-# EitherTで書いた場合（番外編）
+# CatsのEitherTで書いた場合（番外編）
 ```scala
 (login: LoginFormData) => {
   val result: EitherT[Future, Result, Result] =
@@ -246,10 +240,7 @@ for {
       )
     } yield result
 
-  result.value.map {
-    case Left(l)  => l
-    case Right(r) => r
-  }
+  result.merge
 }
 ```
 
