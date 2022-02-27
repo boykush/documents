@@ -1,0 +1,17 @@
+/* @theme scalebase */
+
+@import "gaia";
+
+:root {
+  background-color: white;
+  color: rgb(29, 29, 31);
+  font-family: "Open Sans", "Noto Sans JP", sans-serif;
+}
+
+h1 {
+  color: rgb(59 121 184);
+}
+
+h2 {
+  color: rgb(59 121 184);
+}
