@@ -32,16 +32,34 @@ Scalebaseの紹介スライド
 ---
 
 ## Eff（Extensible Effects）とは
-- interpreter
-  - テスト用のinterpreter差し替え
+- 「Freer Monads, More Extensible Effects」で紹介
+- 実装面の特徴
+  - 複数のエフェクトをフラットに扱う
+  - Interpreterによる実行の分離
 
 ---
 
-ユースケースでスマートコンストラクタ使う例
+## 複数のエフェクトをフラットに扱う
+- for式に含まれるエフェクトを型パラメータで受け取る
+- スマートコンストラクタによって `Eff[R, A]`型に変換
+
+![image](smart_constructor.png)
 
 --- 
 
-ユースケースにスタック渡してrunする例
+## Interpreterによる実行の分離
+- Open Unionによりエフェクトのスタックを定義
+- Interpreterによる実行
+
+![image width:1148px](run_effect.png)
+
+---
+
+# 実務のコードでは...？
+- 例としてファクトリやリポジトリにエフェクトを用いることも
+- `Eff[R, A]`型を複数のメソッドで引き回すことが多い
+
+![image](usecase.png)
 
 ---
 
@@ -77,6 +95,7 @@ runPure
 コーディングレベルでの悩みポイント
 - どのタイミングでEff[R, A]に変換するか
 - flatMapのコンテキスト指定
+- option, list effect使う？
 
 
 ---
@@ -87,6 +106,7 @@ runPure
   - シグネチャに現れるエフェクトによって可読性が増す
 - 学習コストが低い?（基盤が整っている前提）
   - モナトラで組み合わせる方が難しい
+  - API見に行く回数は少ない
 
 ---
 
@@ -94,6 +114,8 @@ runPure
 
 ---
 
-スマートコンストラクタ
+# To Be Continued...
+
+![bg cover 40% opacity:0.4](alp_effect.png)
 
 ---
