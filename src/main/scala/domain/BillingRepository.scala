@@ -5,7 +5,12 @@ import org.atnos.eff.Eff
 import org.atnos.eff.syntax.all.toEffPureOps
 
 class BillingRepository {
+  val billing: Billing = Billing(BillingId("BILLING_ID"))
+
   def store[R: _dbio: _myErrorEither](billing: Billing): Eff[R, Billing] =
-    Billing(BillingId("BILLING_ID")).pureEff[R]
+    billing.pureEff[R]
+
+  def findByIds[R: _dbio](billingIds: Seq[BillingId]): Eff[R, Seq[Billing]] =
+    Seq(billing).pureEff[R]
 
 }

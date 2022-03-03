@@ -27,10 +27,6 @@ Kushiro Taichi at Alp,Inc.
 
 ---
 
-Scalebaseの紹介スライド
-
----
-
 ## Eff（Extensible Effects）とは
 - 「Freer Monads, More Extensible Effects」で紹介
 - 実装面の特徴
@@ -63,16 +59,22 @@ Scalebaseの紹介スライド
 
 ---
 
-- ドメイン層（ドメインロジック・抽象Repository）にも採用
-- Eff[R, A]型を引き回すことが多い
+# コーディング集
+
+実務に近いコードを紹介していきます
 
 ---
 
-コーディング集
+## map
+```scala
+for {
+  providerIdAndBillingIds <- billingRepository
+    .findByIds[R](billingIds)
+    .map(billings => (providerId, billings))
+  ...
+} yield 
 
----
-
-map, flatMap
+```
 
 ---
 
