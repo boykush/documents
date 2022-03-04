@@ -193,7 +193,7 @@ Kushiro Taichi at Alp,Inc.
 ![bg cover 40% opacity:0.4](alp_effect.png)
 
 ---
-参考リンク
+## 参考リンク
 - atnos-eff公式チュートリアル
   - https://atnos-org.github.io/eff/
 - Freer Monads, More Extensible Effects
