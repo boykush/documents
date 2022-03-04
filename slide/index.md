@@ -51,7 +51,7 @@ Kushiro Taichi at Alp,Inc.
 
 ## Interpreterによる実行の分離
 - Open Unionによりエフェクトのスタックを定義
-- Interpreterによる実行
+- Interpreterによる実行 - Controller
 - 実行順により型の結果が変わる - 値の結果は変わらない
 
 ![image width:1000px](5_page.png)
@@ -134,8 +134,11 @@ Kushiro Taichi at Alp,Inc.
 ---
 
 ## option, list エフェクトを用いるか
-- `runXxx`によって実行順を制御
-- 処理に対する実行順の制御に気をつける
+- option
+  - アルプでは標準的には使っていない
+  - 基本的には`Either`に変換
+- list
+  - 複雑な処理によりfor式の中で他のエフェクト処理をフラットに挟みたいケース等
 
 ---
 
@@ -173,7 +176,7 @@ Kushiro Taichi at Alp,Inc.
 
 ---
 ## 独自エフェクトが多数用いられている
-- 独自エラー型
+- 独自エラー
 - ID生成
 - DBトランザクション（doobie公式） etc.
 
