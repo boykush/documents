@@ -54,5 +54,17 @@ class CalculateSpec extends AnyFreeSpec with must.Matchers {
 
       result mustBe Some(Right(7))
     }
+
+    "either, optionの順で実行する" in new SetUp {
+      type R = Fx.fx3[Option, ThrowableEither, TimedFuture]
+
+      val result: Option[Option[Int]] =
+        Calculate
+          .execute[R]
+          .runOption
+          .runPure
+
+      result mustBe Some(7)
+    }
   }
 }

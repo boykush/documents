@@ -45,7 +45,7 @@ Kushiro Taichi at Alp,Inc.
 
 ## Interpreterによる実行の分離
 - Open Unionによりエフェクトのスタックを定義
-- Interpreterによる実行
+- Interpreterによる実行（差し替え可能）
 
 ![image width:1150px](5_page.png)
 
@@ -87,7 +87,11 @@ Kushiro Taichi at Alp,Inc.
 
 ---
 
-runPure
+## runPure
+- `Eff[R, A]`から`A`を `Option`で囲んで取り出す
+- エフェクトが全て実行済みであれば `Some`
+
+![image](11_page.png)
 
 ---
 
