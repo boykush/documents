@@ -1,6 +1,6 @@
 package domain
 
-import org.atnos.eff.|=
+import org.atnos.eff.{/=, <=, |=}
 
 object SampleEffect extends SampleEffect
 
@@ -13,5 +13,6 @@ trait SampleEffect {
 
   trait MyError
   type MyErrorEither[A] = MyError Either A
-  type _myErrorEither[R] = MyErrorEither |= R
+  type _myErrorEither[R] = MyErrorEither /= R
+  type _myErrorEitherMember[R] = MyErrorEither <= R
 }

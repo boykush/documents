@@ -62,7 +62,7 @@ class CalculateSpec extends AnyFreeSpec with must.Matchers {
         Calculate
           .execute[R]
           .runOption
-          .runPure
+          .runPure // None
 
       result mustBe Some(7)
     }

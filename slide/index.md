@@ -28,10 +28,18 @@ Kushiro Taichi at Alp,Inc.
 ---
 
 ## Eff（Extensible Effects）とは
-- 「Freer Monads, More Extensible Effects」で紹介
-- 実装面の特徴
+- 「Freer Monads, More Extensible Effects」の論文で紹介
+  - Efficient Freer, Open Union
+- 「Extensible Effects in Scala」- ねこはるさんの記事
+
+---
+
+## Eff（Extensible Effects）の実装
+- atnos-effライブラリを用いる
+- 実装時の特徴
   - 複数のエフェクトをフラットに扱う
   - Interpreterによる実行の分離
+  - 独自エフェクトの定義が可能
 
 ---
 
@@ -45,23 +53,33 @@ Kushiro Taichi at Alp,Inc.
 
 ## Interpreterによる実行の分離
 - Open Unionによりエフェクトのスタックを定義
-- Interpreterによる実行（差し替え可能）
+- Interpreterによる実行
+- 実行順により型の結果が変わる - 値の結果は変わらない
 
-![image width:1150px](5_page.png)
+![image width:1000px](5_page.png)
 
 ---
 
-## 実務のコードでは...？
-- 例として`Factory`や`Repository`にエフェクトを用いることも
-- `Eff[R, A]`型を複数のメソッドで引き回すことが多い
+## 独自エフェクトの定義が可能
+- エフェクト定義
+- スマートコンストラクタ
+- Interpreter - 差し替え可能
 
-![image](6_page.png)
+![image](7_page.png)
 
 ---
 
 # コーディング集
 
 実務に近いコードを紹介していきます
+
+---
+
+## 実務のコードでは...？
+- 例として`Factory`や`Repository`内でエフェクトを用いることも
+- `Eff[R, A]`型を複数のメソッドで引き回すことが多い
+
+![image](6_page.png)
 
 ---
 
@@ -89,9 +107,10 @@ Kushiro Taichi at Alp,Inc.
 
 ## runPure
 - `Eff[R, A]`から`A`を `Option`で囲んで取り出す
-- エフェクトが全て実行済みであれば `Some`
+  - 全て実行済みであれば `Some`、未実行があれば `None`
+- 結果は式に依存するのでmockをスキップして `Some`を取得できる
 
-![image](11_page.png)
+![image width:700px](11_page.png)
 
 ---
 
@@ -112,13 +131,13 @@ Kushiro Taichi at Alp,Inc.
 - テストが煩雑になることも
 - ドメインロジックはピュアに書く？
 
-![image](14_page.png)
+![image](16_page.png)
 
 ---
 
 ## option, list エフェクトを用いるか
 - `runXxx`によって実行順を制御
-- 処理に対する実行順の意識が必要になり基本的には使っていない
+- 処理に対する実行順の制御に気をつける
 
 ---
 
@@ -129,8 +148,8 @@ Kushiro Taichi at Alp,Inc.
 
 ---
 
-## 実装を意識しなくなるが実装知識も大事
-- DBのトランザクションどうなってる？
+## 実装をカプセル化はするが実装知識も大事
+- DBのコネクション、セッションどうなってる？
 
 ---
 
@@ -139,9 +158,9 @@ Kushiro Taichi at Alp,Inc.
 ---
 
 ## ドメインに集中できる
-- 
-- 実装がカプセル化される
+- 実装がカプセル化されユースケースの見通しが良くなる
 - シグネチャに現れるエフェクトによって可読性が増す
+  - ユースケースに対して発生するエフェクトが把握できる
 
 ---
 
@@ -156,16 +175,15 @@ Kushiro Taichi at Alp,Inc.
 
 ---
 ## 独自エフェクトが多数用いられている
+- 独自エラー型
 - ID生成
-- DBトランザクション
-- Kinesis実行 etc.
+- DBトランザクション（doobie公式） etc.
 
 ---
 
 ## 独自エラーエフェクトに対するスマートコンストラクタを多数定義
 
 ![image width:1000px](22_page.png)
-
 
 ---
 
