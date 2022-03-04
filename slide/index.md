@@ -14,14 +14,12 @@ Kushiro Taichi at Alp,Inc.
 
 ## 自己紹介
 
-- Kushiro Taichi ( shiroichi315 )
+- 久代 太一 ( shiroichi315 )
 - アルプ株式会社 2021.06 ~
 - キーワード
-  - Scala
-  - DDD
-  - Agile
-  - FP
-  - Tortoiseshell
+  - Scala, DDD, Agile, FP
+- その他
+  -  Tortoiseshell, Tsukemen, Sauna, Bouldering
 
 ![bg right:40% cover](icon.jpeg)
 
@@ -107,8 +105,8 @@ Kushiro Taichi at Alp,Inc.
 
 ## runPure
 - `Eff[R, A]`から`A`を `Option`で囲んで取り出す
-  - 全て実行済みであれば `Some`、未実行があれば `None`
-- 結果は式に依存するのでmockをスキップして `Some`を取得できる
+  - エフェクトスタックが空であれば `Some`、空でなければ `None`
+- 空かどうかは式に依存しmockはエフェクトスタックに含まれない
 
 ![image width:700px](11_page.png)
 
