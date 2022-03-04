@@ -188,3 +188,14 @@ Kushiro Taichi at Alp,Inc.
 # To Be Continued...
 
 ![bg cover 40% opacity:0.4](alp_effect.png)
+
+---
+参考リンク
+- atnos-eff公式チュートリアル
+  - https://atnos-org.github.io/eff/
+- Freer Monads, More Extensible Effects
+  - https://okmij.org/ftp/Haskell/extensible/more.pdf
+- Extensible Effects in Scala
+  - https://halcat.org/scala/extensible/index.html
+- Scala + CleanArchitecture に Eff を組み込んでみた
+  - https://tech.recruit-mp.co.jp/server-side/post-18728/
