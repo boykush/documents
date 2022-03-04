@@ -106,9 +106,9 @@ Kushiro Taichi at Alp,Inc.
 ## runPure
 - `Eff[R, A]`から`A`を `Option`で囲んで取り出す
   - エフェクトスタックが空であれば `Some`、空でなければ `None`
-- 空かどうかは式に依存しmockはエフェクトスタックに含まれない
+- 空かどうかは式に依存しmock（pureEff）はエフェクトスタックに含まれない
 
-![image width:700px](11_page.png)
+![image width:600px](11_page.png)
 
 ---
 
