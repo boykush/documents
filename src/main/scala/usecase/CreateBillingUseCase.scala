@@ -15,7 +15,7 @@ class CreateBillingUseCase @Inject() (
       args: CreateBillingUseCaseArgs
   ): Eff[R, CreateBillingUseCaseResult] =
     for {
-      billing <- billingFactory.create[R](args.billingDate)
+      billing <- billingFactory.create(args.billingDate)
       storedBilling <- billingRepository.store[R](billing)
     } yield CreateBillingUseCaseResult(storedBilling)
 }

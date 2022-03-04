@@ -13,4 +13,7 @@ class BillingRepository {
   def findByIds[R: _dbio](billingIds: Seq[BillingId]): Eff[R, Seq[Billing]] =
     Seq(billing).pureEff[R]
 
+  def findByContractId[R: _dbio](contractId: ContractId): Eff[R, Seq[Billing]] =
+    Seq(billing).pureEff[R]
+
 }

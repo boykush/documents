@@ -39,7 +39,7 @@ Kushiro Taichi at Alp,Inc.
 - for式に含まれるエフェクトを型パラメータで受け取る
 - スマートコンストラクタによって `Eff[R, A]`型に変換
 
-![image](smart_constructor.png)
+![image](4_page.png)
 
 --- 
 
@@ -47,15 +47,15 @@ Kushiro Taichi at Alp,Inc.
 - Open Unionによりエフェクトのスタックを定義
 - Interpreterによる実行
 
-![image width:1148px](run_effect.png)
+![image width:1150px](5_page.png)
 
 ---
 
-# 実務のコードでは...？
-- 例としてファクトリやリポジトリにエフェクトを用いることも
+## 実務のコードでは...？
+- 例として`Factory`や`Repository`にエフェクトを用いることも
 - `Eff[R, A]`型を複数のメソッドで引き回すことが多い
 
-![image](usecase.png)
+![image](6_page.png)
 
 ---
 
@@ -66,27 +66,24 @@ Kushiro Taichi at Alp,Inc.
 ---
 
 ## map
-```scala
-for {
-  providerIdAndBillingIds <- billingRepository
-    .findByIds[R](billingIds)
-    .map(billings => (providerId, billings))
-  ...
-} yield 
+- `A`型の値に関数を適用
 
-```
+![image width:1150px](8_page.png)
 
 ---
 
-pureEff[R, A]
+## pureEff
+- pureな `A` 型の値を `Eff[R, A]`型に変換
+
+![image](9_page.png)
 
 ---
 
-traverse, sequence
+## traverseA
+- `Eff[R, A]`型を返す処理を走査する
+- `sequenceA`も同様に存在
 
----
-
-validated -> runNel
+![image](10_page.png)
 
 ---
 
@@ -94,8 +91,25 @@ runPure
 
 ---
 
-コーディングレベルでの悩みポイント
-- どのタイミングでEff[R, A]に変換するか
+# コーディングレベルでの悩みポイント
+
+---
+
+
+## どのタイミングでEff[R, A]に変換するか
+- テストが煩雑になることも
+- ドメインロジックはピュアに書く？
+
+![image](14_page.png)
+
+---
+
+## option, list エフェクトを用いるか
+- `runXxx`によって実行順を制御
+- 処理に対する実行順の意識が必要になり基本的には使っていない
+
+---
+
 - flatMapのコンテキスト指定
 - option, list effect使う？
 
