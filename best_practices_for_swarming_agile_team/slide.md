@@ -172,7 +172,7 @@ Swarmingはチームメンバーのメンタルヘルスにも好影響を及ぼ
 <!--
 孤独な群れを把握できるよう、誰がどのフィーチャー・差込対応に取り組んでいるのか、複数のタスクを抱えていないか、チームメンバー全員がアクセスしやすい場所に可視化をします。以下の様なイメージです。
 
-<img src="https://gist.github.com/boykush/affbbe198afec6f3fccadedf048dfe9a/raw/ce564ba03f8bac90af2bff8c8a7a35490d4cb79f/swarming_circle.png" width="300px">
+<img src="https://github.com/boykush/documents/blob/main/best_practices_for_swarming_agile_team/swarming_circle.png?raw=true" width="300px">
 
 複数のタスクを抱えている人はサークル同士が重なる場所にアイコンを置きます。
 
